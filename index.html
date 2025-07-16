@@ -1,56 +1,973 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <!-- 
-      This is an HTML comment
-      You can write text in a comment and the content won't be visible in the page
-    -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redline Rebellion Database</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="icon" href="https://glitch.com/favicon.ico" />
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #660000, #330000, #990000, #440000);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
 
-  <!--
-      This is the page head - it contains info the browser uses
-      Like the title, which appears on the browser tab but not inside the page
-      Further down you'll see the content that displays in the page
-    -->
-  <title>Hello World!</title>
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
 
-  <!-- The website stylesheet -->
-  <link rel="stylesheet" href="/style.css" />
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 2px solid #ff0000;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+        }
 
-  <!-- The website JavaScript file -->
-  <script src="/script.js" defer></script>
+        .logo {
+            font-size: 2.5em;
+            font-weight: bold;
+            text-shadow: 0 0 10px #ff0000;
+            margin-bottom: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { text-shadow: 0 0 10px #ff0000; }
+            50% { text-shadow: 0 0 20px #ff0000, 0 0 30px #ff0000; }
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .nav-container {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-bottom: 1px solid #ff0000;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            padding: 12px 20px;
+            background: rgba(255, 0, 0, 0.2);
+            border: 2px solid #ff0000;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+        }
+
+        .nav-tab:hover {
+            background: rgba(255, 0, 0, 0.4);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .nav-tab.active {
+            background: rgba(255, 0, 0, 0.6);
+            box-shadow: 0 0 25px rgba(255, 0, 0, 0.8);
+        }
+
+        .content {
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-container {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #ff0000;
+            margin-bottom: 20px;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #ff6666;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #ff0000;
+            color: white;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+        }
+
+        .btn {
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #ff0000, #cc0000);
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.4);
+        }
+
+        .btn:hover {
+            background: linear-gradient(45deg, #ff3333, #ff0000);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .data-table th, .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ff0000;
+        }
+
+        .data-table th {
+            background: rgba(255, 0, 0, 0.3);
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .data-table tr:hover {
+            background: rgba(255, 0, 0, 0.1);
+        }
+
+        .delete-btn {
+            background: #990000;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 0.8em;
+        }
+
+        .delete-btn:hover {
+            background: #cc0000;
+        }
+
+        .info-section {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #ff0000;
+            margin-bottom: 20px;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .info-section h3 {
+            color: #ff6666;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            font-size: 1.2em;
+        }
+
+        .rank-hierarchy {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .rank-item {
+            background: rgba(255, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ff0000;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .rank-item:hover {
+            background: rgba(255, 0, 0, 0.3);
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+
+        .cyber-line {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ff0000, transparent);
+            margin: 20px 0;
+            animation: scan 2s infinite;
+        }
+
+        @keyframes scan {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .glitch {
+            position: relative;
+            animation: glitch 2s infinite;
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            10% { transform: translate(-2px, 2px); }
+            20% { transform: translate(2px, -2px); }
+            30% { transform: translate(-2px, -2px); }
+            40% { transform: translate(2px, 2px); }
+            50% { transform: translate(-2px, 2px); }
+            60% { transform: translate(2px, -2px); }
+            70% { transform: translate(-2px, -2px); }
+            80% { transform: translate(2px, 2px); }
+            90% { transform: translate(-2px, 2px); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        #auth-email {
+            font-family: 'Courier New', monospace;
+        }
+
+        #auth-email:focus {
+            outline: none;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+        }
+    </style>
 </head>
-
 <body>
-  <!--
-      The body includes the content you see in the page
-      Each element is defined using tags, like this <div></div>
-      The attributes like class="wrapper" let us style elements in the CSS
-    -->
-  <div class="wrapper">
-    <div class="content" role="main">
-      <h1 class="title">Oh hi website!</h1>
-      <img src="/cool-website.svg" class="illustration" alt="cool website" />
-      <div class="instructions">
-        <p>
-          Fork <a href="https://github.com/glitchdotcom/website-to-compute">this project</a> and open it in a GitHub Codespace.
-        </p>
-        <p> Follow the steps in the README to deploy your new website to Fastly in a few steps!
-        </p>
-
-      </div>
-
-      <footer class="footer">
-        <div>
-          <a class="remix" href="https://github.com/glitchdotcom/website-to-compute">🚧 Get your own site</a>
-        </div>
-      </footer>
+    <div class="header">
+        <div class="logo glitch">REDLINE REBELLION</div>
+        <div class="subtitle">High-Tech Rebel Database</div>
     </div>
-  </div>
-</body>
 
+    <div class="nav-container">
+        <div class="nav-tabs">
+            <div class="nav-tab active" onclick="showTab('information')">Information</div>
+            <div class="nav-tab" onclick="showTab('personnel')">Personnel</div>
+            <div class="nav-tab" onclick="showTab('watchlist')">Watchlist</div>
+            <div class="nav-tab" onclick="showTab('blacklist')">Blacklist</div>
+            <div class="nav-tab" onclick="showTab('sworn-enemy')">Sworn Enemy</div>
+        </div>
+        <div style="text-align: center; margin-top: 10px;">
+            <button class="btn" onclick="saveData()" style="margin-right: 10px;">Save Database</button>
+            <input type="file" id="loadFile" accept=".json" style="display: none;" onchange="loadData()">
+            <button class="btn" onclick="document.getElementById('loadFile').click()">Load Database</button>
+        </div>
+    </div>
+
+    <!-- Authentication Modal -->
+    <div id="auth-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: linear-gradient(135deg, #660000, #330000); padding: 30px; border-radius: 10px; border: 2px solid #ff0000; text-align: center; box-shadow: 0 0 30px rgba(255,0,0,0.5);">
+            <h2 style="color: #ff6666; margin-bottom: 20px; text-transform: uppercase;">ACCESS RESTRICTED</h2>
+            <p style="margin-bottom: 20px;">Enter authorized email to access Redline Rebellion Database</p>
+            <input type="email" id="auth-email" placeholder="Enter your email" style="width: 300px; padding: 10px; margin-bottom: 20px; background: rgba(0,0,0,0.6); border: 2px solid #ff0000; color: white; border-radius: 5px;">
+            <br>
+            <button onclick="authenticate()" style="padding: 12px 25px; background: linear-gradient(45deg, #ff0000, #cc0000); border: none; color: white; cursor: pointer; border-radius: 5px; font-weight: bold; text-transform: uppercase;">ACCESS DATABASE</button>
+            <p id="auth-error" style="color: #ff0000; margin-top: 10px; display: none;">ACCESS DENIED - UNAUTHORIZED EMAIL</p>
+        </div>
+    </div>
+
+    <div class="content" id="main-content" style="display: none;">
+        <!-- Information Tab -->
+        <div id="information" class="tab-content active">
+            <div class="info-section">
+                <h3>Faction Overview</h3>
+                <div class="cyber-line"></div>
+                <p>The Redline Rebellion is an elite high-tech faction operating within the Squid Game universe. We are rebels who fight against the oppressive system using advanced technology and strategic warfare.</p>
+                
+                <h3>Mission Statement</h3>
+                <div class="cyber-line"></div>
+                <p>To overthrow the corrupt game masters and establish a new order where freedom and justice prevail. We utilize cutting-edge technology and unwavering determination to achieve our goals.</p>
+                
+                <h3>Rank Hierarchy</h3>
+                <div class="cyber-line"></div>
+                <div class="rank-hierarchy">
+                    <div class="rank-item">Initiate</div>
+                    <div class="rank-item">Striker</div>
+                    <div class="rank-item">Breaker</div>
+                    <div class="rank-item">Cipher</div>
+                    <div class="rank-item">Rebel</div>
+                    <div class="rank-item">Viper</div>
+                    <div class="rank-item">Field Warden</div>
+                    <div class="rank-item">Phantom</div>
+                    <div class="rank-item">Shockwave</div>
+                    <div class="rank-item">Sentinel</div>
+                    <div class="rank-item">Warden</div>
+                    <div class="rank-item">Command</div>
+                    <div class="rank-item">Crimson Marshal</div>
+                    <div class="rank-item">Redline Prime</div>
+                    <div class="rank-item">The Rift</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Personnel Tab -->
+        <div id="personnel" class="tab-content">
+            <div class="form-container">
+                <h3>Add Personnel</h3>
+                <div class="cyber-line"></div>
+                <div class="form-group">
+                    <label for="personnel-name">Name</label>
+                    <input type="text" id="personnel-name" placeholder="Enter personnel name">
+                </div>
+                <div class="form-group">
+                    <label for="personnel-rank">Rank</label>
+                    <select id="personnel-rank">
+                        <option value="Initiate">Initiate</option>
+                        <option value="Striker">Striker</option>
+                        <option value="Breaker">Breaker</option>
+                        <option value="Cipher">Cipher</option>
+                        <option value="Rebel">Rebel</option>
+                        <option value="Viper">Viper</option>
+                        <option value="Field Warden">Field Warden</option>
+                        <option value="Phantom">Phantom</option>
+                        <option value="Shockwave">Shockwave</option>
+                        <option value="Sentinel">Sentinel</option>
+                        <option value="Warden">Warden</option>
+                        <option value="Command">Command</option>
+                        <option value="Crimson Marshal">Crimson Marshal</option>
+                        <option value="Redline Prime">Redline Prime</option>
+                        <option value="The Rift">The Rift</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="addPersonnel()">Add Personnel</button>
+            </div>
+            
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Rank</th>
+                        <th>Date Added</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="personnel-table">
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Watchlist Tab -->
+        <div id="watchlist" class="tab-content">
+            <div class="form-container">
+                <h3>Add to Watchlist</h3>
+                <div class="cyber-line"></div>
+                <div class="form-group">
+                    <label for="watchlist-name">Name</label>
+                    <input type="text" id="watchlist-name" placeholder="Enter name">
+                </div>
+                <div class="form-group">
+                    <label for="watchlist-reason">Reason</label>
+                    <textarea id="watchlist-reason" placeholder="Enter reason for surveillance"></textarea>
+                </div>
+                <button class="btn" onclick="addWatchlist()">Add to Watchlist</button>
+            </div>
+            
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Reason</th>
+                        <th>Date Added</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="watchlist-table">
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Blacklist Tab -->
+        <div id="blacklist" class="tab-content">
+            <div class="form-container">
+                <h3>Add to Blacklist</h3>
+                <div class="cyber-line"></div>
+                <div class="form-group">
+                    <label for="blacklist-name">Name</label>
+                    <input type="text" id="blacklist-name" placeholder="Enter name">
+                </div>
+                <div class="form-group">
+                    <label for="blacklist-reason">Reason</label>
+                    <textarea id="blacklist-reason" placeholder="Enter reason for blacklisting"></textarea>
+                </div>
+                <button class="btn" onclick="addBlacklist()">Add to Blacklist</button>
+            </div>
+            
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Reason</th>
+                        <th>Date Added</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="blacklist-table">
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Sworn Enemy Tab -->
+        <div id="sworn-enemy" class="tab-content">
+            <div class="form-container">
+                <h3>Add Sworn Enemy</h3>
+                <div class="cyber-line"></div>
+                <div class="form-group">
+                    <label for="enemy-name">Name</label>
+                    <input type="text" id="enemy-name" placeholder="Enter enemy name">
+                </div>
+                <div class="form-group">
+                    <label for="enemy-threat">Threat Level</label>
+                    <select id="enemy-threat">
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                        <option value="Critical">Critical</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="enemy-reason">Reason</label>
+                    <textarea id="enemy-reason" placeholder="Enter reason for enmity"></textarea>
+                </div>
+                <button class="btn" onclick="addEnemy()">Add Sworn Enemy</button>
+            </div>
+            
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Threat Level</th>
+                        <th>Reason</th>
+                        <th>Date Added</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="enemy-table">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Authentication system
+        const AUTHORIZED_EMAIL = 'david.oyiana9@gmail.com';
+        let isAuthenticated = false;
+
+        // Check authentication on page load
+        window.onload = function() {
+            checkAuth();
+        };
+
+        function checkAuth() {
+            const savedEmail = getCookie('redlineAuth');
+            if (savedEmail === AUTHORIZED_EMAIL) {
+                isAuthenticated = true;
+                showMainContent();
+                loadFromCookies();
+            } else {
+                showAuthModal();
+            }
+        }
+
+        function authenticate() {
+            const email = document.getElementById('auth-email').value.toLowerCase().trim();
+            const errorElement = document.getElementById('auth-error');
+            
+            if (email === AUTHORIZED_EMAIL) {
+                isAuthenticated = true;
+                setCookie('redlineAuth', email, 365);
+                showMainContent();
+                loadFromCookies();
+                errorElement.style.display = 'none';
+            } else {
+                errorElement.style.display = 'block';
+                document.getElementById('auth-email').value = '';
+                // Add shake animation to error
+                errorElement.style.animation = 'shake 0.5s';
+                setTimeout(() => {
+                    errorElement.style.animation = '';
+                }, 500);
+            }
+        }
+
+        function showAuthModal() {
+            document.getElementById('auth-modal').style.display = 'flex';
+            document.getElementById('main-content').style.display = 'none';
+        }
+
+        function showMainContent() {
+            document.getElementById('auth-modal').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+        }
+
+        // Cookie helper functions
+        function setCookie(name, value, days) {
+            const expires = new Date(Date.now() + days * 864e5).toUTCString();
+            document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+        }
+
+        function getCookie(name) {
+            return document.cookie.split('; ').reduce((r, v) => {
+                const parts = v.split('=');
+                return parts[0] === name ? decodeURIComponent(parts[1]) : r;
+            }, '');
+        }
+
+        // Security check for all edit functions
+        function securityCheck() {
+            if (!isAuthenticated) {
+                alert('ACCESS DENIED - Authentication required');
+                showAuthModal();
+                return false;
+            }
+            return true;
+        }
+
+        // Data storage
+        let personnel = [];
+        let watchlist = [];
+        let blacklist = [];
+        let enemies = [];
+
+        // Save data to cookies (as backup storage)
+        function saveToCookies() {
+            const data = {
+                personnel: personnel,
+                watchlist: watchlist,
+                blacklist: blacklist,
+                enemies: enemies,
+                lastSaved: new Date().toISOString()
+            };
+            
+            // Save to cookies (split into chunks due to size limits)
+            const dataStr = JSON.stringify(data);
+            const chunks = [];
+            const chunkSize = 4000; // Safe cookie size
+            
+            for (let i = 0; i < dataStr.length; i += chunkSize) {
+                chunks.push(dataStr.substring(i, i + chunkSize));
+            }
+            
+            // Clear old chunks
+            for (let i = 0; i < 10; i++) {
+                document.cookie = `redlineData${i}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+            }
+            
+            // Save new chunks
+            chunks.forEach((chunk, index) => {
+                document.cookie = `redlineData${index}=${chunk}; expires=Fri, 31 Dec 2099 23:59:59 UTC; path=/;`;
+            });
+            
+            document.cookie = `redlineChunks=${chunks.length}; expires=Fri, 31 Dec 2099 23:59:59 UTC; path=/;`;
+        }
+
+        // Load data from cookies
+        function loadFromCookies() {
+            const cookies = document.cookie.split(';');
+            const cookieData = {};
+            
+            cookies.forEach(cookie => {
+                const [key, value] = cookie.trim().split('=');
+                cookieData[key] = value;
+            });
+            
+            if (cookieData.redlineChunks) {
+                const chunkCount = parseInt(cookieData.redlineChunks);
+                let dataStr = '';
+                
+                for (let i = 0; i < chunkCount; i++) {
+                    dataStr += cookieData[`redlineData${i}`] || '';
+                }
+                
+                try {
+                    const data = JSON.parse(dataStr);
+                    personnel = data.personnel || [];
+                    watchlist = data.watchlist || [];
+                    blacklist = data.blacklist || [];
+                    enemies = data.enemies || [];
+                    
+                    // Update all tables
+                    updatePersonnelTable();
+                    updateWatchlistTable();
+                    updateBlacklistTable();
+                    updateEnemyTable();
+                    
+                    console.log('Data loaded successfully');
+                } catch (e) {
+                    console.log('No valid saved data found');
+                }
+            }
+        }
+
+        // Save data to downloadable file
+        function saveData() {
+            const data = {
+                personnel: personnel,
+                watchlist: watchlist,
+                blacklist: blacklist,
+                enemies: enemies,
+                lastSaved: new Date().toISOString(),
+                faction: "Redline Rebellion"
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `redline_rebellion_database_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            
+            URL.revokeObjectURL(url);
+            
+            // Also save to cookies as backup
+            saveToCookies();
+            
+            alert('Database saved successfully!');
+        }
+
+        // Load data from file
+        function loadData() {
+            const file = document.getElementById('loadFile').files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    personnel = data.personnel || [];
+                    watchlist = data.watchlist || [];
+                    blacklist = data.blacklist || [];
+                    enemies = data.enemies || [];
+                    
+                    // Update all tables
+                    updatePersonnelTable();
+                    updateWatchlistTable();
+                    updateBlacklistTable();
+                    updateEnemyTable();
+                    
+                    // Save to cookies
+                    saveToCookies();
+                    
+                    alert('Database loaded successfully!');
+                } catch (error) {
+                    alert('Error loading database file. Please check the file format.');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Tab switching
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Personnel functions
+        function addPersonnel() {
+            if (!securityCheck()) return;
+            
+            const name = document.getElementById('personnel-name').value;
+            const rank = document.getElementById('personnel-rank').value;
+            
+            if (name) {
+                const person = {
+                    name: name,
+                    rank: rank,
+                    dateAdded: new Date().toLocaleDateString()
+                };
+                personnel.push(person);
+                updatePersonnelTable();
+                saveToCookies(); // Auto-save
+                document.getElementById('personnel-name').value = '';
+            }
+        }
+
+        function updatePersonnelTable() {
+            const tbody = document.getElementById('personnel-table');
+            tbody.innerHTML = '';
+            personnel.forEach((person, index) => {
+                const row = `
+                    <tr>
+                        <td>${person.name}</td>
+                        <td>${person.rank}</td>
+                        <td>${person.dateAdded}</td>
+                        <td><button class="delete-btn" onclick="deletePersonnel(${index})">Delete</button></td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function deletePersonnel(index) {
+            if (!securityCheck()) return;
+            personnel.splice(index, 1);
+            updatePersonnelTable();
+            saveToCookies(); // Auto-save
+        }
+
+        // Watchlist functions
+        function addWatchlist() {
+            if (!securityCheck()) return;
+            
+            const name = document.getElementById('watchlist-name').value;
+            const reason = document.getElementById('watchlist-reason').value;
+            
+            if (name && reason) {
+                const entry = {
+                    name: name,
+                    reason: reason,
+                    dateAdded: new Date().toLocaleDateString()
+                };
+                watchlist.push(entry);
+                updateWatchlistTable();
+                saveToCookies(); // Auto-save
+                document.getElementById('watchlist-name').value = '';
+                document.getElementById('watchlist-reason').value = '';
+            }
+        }
+
+        function updateWatchlistTable() {
+            const tbody = document.getElementById('watchlist-table');
+            tbody.innerHTML = '';
+            watchlist.forEach((entry, index) => {
+                const row = `
+                    <tr>
+                        <td>${entry.name}</td>
+                        <td>${entry.reason}</td>
+                        <td>${entry.dateAdded}</td>
+                        <td><button class="delete-btn" onclick="deleteWatchlist(${index})">Delete</button></td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function deleteWatchlist(index) {
+            if (!securityCheck()) return;
+            watchlist.splice(index, 1);
+            updateWatchlistTable();
+            saveToCookies(); // Auto-save
+        }
+
+        // Blacklist functions
+        function addBlacklist() {
+            if (!securityCheck()) return;
+            
+            const name = document.getElementById('blacklist-name').value;
+            const reason = document.getElementById('blacklist-reason').value;
+            
+            if (name && reason) {
+                const entry = {
+                    name: name,
+                    reason: reason,
+                    dateAdded: new Date().toLocaleDateString()
+                };
+                blacklist.push(entry);
+                updateBlacklistTable();
+                saveToCookies(); // Auto-save
+                document.getElementById('blacklist-name').value = '';
+                document.getElementById('blacklist-reason').value = '';
+            }
+        }
+
+        function updateBlacklistTable() {
+            const tbody = document.getElementById('blacklist-table');
+            tbody.innerHTML = '';
+            blacklist.forEach((entry, index) => {
+                const row = `
+                    <tr>
+                        <td>${entry.name}</td>
+                        <td>${entry.reason}</td>
+                        <td>${entry.dateAdded}</td>
+                        <td><button class="delete-btn" onclick="deleteBlacklist(${index})">Delete</button></td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function deleteBlacklist(index) {
+            if (!securityCheck()) return;
+            blacklist.splice(index, 1);
+            updateBlacklistTable();
+            saveToCookies(); // Auto-save
+        }
+
+        // Enemy functions
+        function addEnemy() {
+            if (!securityCheck()) return;
+            
+            const name = document.getElementById('enemy-name').value;
+            const threat = document.getElementById('enemy-threat').value;
+            const reason = document.getElementById('enemy-reason').value;
+            
+            if (name && reason) {
+                const enemy = {
+                    name: name,
+                    threat: threat,
+                    reason: reason,
+                    dateAdded: new Date().toLocaleDateString()
+                };
+                enemies.push(enemy);
+                updateEnemyTable();
+                saveToCookies(); // Auto-save
+                document.getElementById('enemy-name').value = '';
+                document.getElementById('enemy-reason').value = '';
+            }
+        }
+
+        function updateEnemyTable() {
+            const tbody = document.getElementById('enemy-table');
+            tbody.innerHTML = '';
+            enemies.forEach((enemy, index) => {
+                const row = `
+                    <tr>
+                        <td>${enemy.name}</td>
+                        <td>${enemy.threat}</td>
+                        <td>${enemy.reason}</td>
+                        <td>${enemy.dateAdded}</td>
+                        <td><button class="delete-btn" onclick="deleteEnemy(${index})">Delete</button></td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function deleteEnemy(index) {
+            if (!securityCheck()) return;
+            enemies.splice(index, 1);
+            updateEnemyTable();
+            saveToCookies(); // Auto-save
+        }
+
+        // Save and load functions (also protected)
+        function saveData() {
+            if (!securityCheck()) return;
+            
+            const data = {
+                personnel: personnel,
+                watchlist: watchlist,
+                blacklist: blacklist,
+                enemies: enemies,
+                lastSaved: new Date().toISOString(),
+                faction: "Redline Rebellion"
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `redline_rebellion_database_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            
+            URL.revokeObjectURL(url);
+            
+            // Also save to cookies as backup
+            saveToCookies();
+            
+            alert('Database saved successfully!');
+        }
+
+        // Load data from file
+        function loadData() {
+            if (!securityCheck()) return;
+            
+            const file = document.getElementById('loadFile').files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    personnel = data.personnel || [];
+                    watchlist = data.watchlist || [];
+                    blacklist = data.blacklist || [];
+                    enemies = data.enemies || [];
+                    
+                    // Update all tables
+                    updatePersonnelTable();
+                    updateWatchlistTable();
+                    updateBlacklistTable();
+                    updateEnemyTable();
+                    
+                    // Save to cookies
+                    saveToCookies();
+                    
+                    alert('Database loaded successfully!');
+                } catch (error) {
+                    alert('Error loading database file. Please check the file format.');
+                }
+            };
+            reader.readAsText(file);
+        }
+    </script>
+</body>
 </html>
